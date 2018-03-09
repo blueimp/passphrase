@@ -1,0 +1,10 @@
+.env
+debug
+debug.test
+/lambda/bin
+/lambda/deploy.yml
+/lambda/deployed.txt
+/lambda/event.json
+/lambda/passphrase.url
+/lambda/server.pid
+/passphrase/passphrase

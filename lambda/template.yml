@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Parameters:
+  LambdaRole:
+    Type: String
+    AllowedPattern: ^arn:aws:iam::[0-9]+:role/[a-zA-Z0-9+=,.@\-_]{1,64}$
+Resources:
+  Passphrase:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: bin
+      Handler: main
+      Runtime: go1.x
+      Tracing: Active
+      Role:
+        Ref: LambdaRole
+      Events:
+        GetEvent:
+          Type: Api
+          Properties:
+            Path: /
+            Method: get
