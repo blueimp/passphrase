@@ -42,7 +42,7 @@ The `WORD_LIST_URL` variable can point to a URL or a local file path and
 falls back to `words.txt`.
 
 Words shorter than `MIN_WORD_LENGTH` (defaults to a minimum word
-length of `4` characters) are filtered out.
+length of `3` characters) are filtered out.
 
 The updated word list module can then be used in a new build.
 
