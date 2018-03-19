@@ -24,7 +24,7 @@ BIN_PATH = $(GOPATH)/bin/passphrase
 CLI_DEPS = $(PKG_PATH) passphrase/cli.go passphrase.go words.go
 
 # Dependencies to build the lambda application:
-LAMBDA_DEPS = $(PKG_PATH) lambda/lambda.go passphrase.go words.go
+LAMBDA_DEPS = $(PKG_PATH) vendor lambda/lambda.go passphrase.go words.go
 
 
 # --- Main targets ---
@@ -123,13 +123,19 @@ clean:
 	destroy \
 	clean
 
-# Creates a symlink from the project import path to this directory:
+# Creates a symlink from the project import path to this directory.
+# This allows working with a project outside of $GOPATH:
 $(PKG_PATH):
 	mkdir -p $@; cd $@/..; rm -rf passphrase; ln -s '$(PWD)'
 
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
 $(BIN_PATH): $(CLI_DEPS)
 	go install $(IMPORT_PATH)/passphrase
+
+# Install dependencies via `dep ensure` if available, else via `go get`:
+vendor: $(PKG_PATH)
+	if command -v dep > /dev/null 2>&1; then cd $(PKG_PATH); dep ensure; \
+		else go get -d ./... && mkdir vendor; fi
 
 # Builds the CLI binary:
 passphrase/passphrase: $(CLI_DEPS)
@@ -140,8 +146,8 @@ passphrase/passphrase: $(CLI_DEPS)
 #   -s  disable symbol table
 #   -w  disable DWARF generation
 lambda/bin/main: $(LAMBDA_DEPS)
-	go get -d ./lambda/...
-	cd lambda; GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o bin/main
+	cd $(PKG_PATH)/lambda; \
+		GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o bin/main
 
 # Generates the word list as go code if generate.go or words.txt change:
 words.go: generate.go words.txt

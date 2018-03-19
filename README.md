@@ -47,6 +47,11 @@ length of `3` characters) are filtered out.
 The updated word list module can then be used in a new build.
 
 ## Build
+*Please note:*  
+If [dep](https://github.com/golang/dep) is installed, dependencies are installed
+with a defined version into the `vendor` directory, else their latest version is
+installed via `go get`.
+
 To build both the CLI and the AWS Lambda function binary, run
 [Make](https://en.wikipedia.org/wiki/Make_\(software\)) in the repository:
 
