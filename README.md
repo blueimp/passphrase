@@ -25,6 +25,35 @@ an argument for the number of words to generate:
 passphrase [number]
 ```
 
+## Import
+First clone the project via `go get`:
+
+```sh
+go get github.com/blueimp/passphrase
+```
+
+The `passphrase` library can then be imported and used the following way:
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/blueimp/passphrase"
+)
+
+func main() {
+	pass, err := passphrase.Passphrase(4)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	fmt.Println(pass)
+}
+```
+
 ## Word list
 This repository includes the word list `google-10000-english-usa-no-swears.txt`
 from Josh Kaufman's repository
