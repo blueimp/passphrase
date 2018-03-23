@@ -11,20 +11,14 @@ FAKE_AWS_ENV = AWS_ACCESS_KEY_ID=0 AWS_SECRET_ACCESS_KEY=0
 # can be overriden by defining the AWS_CLI environment variable:
 AWS_CLI ?= aws-vault exec '$(AWS_PROFILE)' -- aws
 
-# The import path of the passphrase package:
-IMPORT_PATH = github.com/blueimp/passphrase
-
-# The absolute package path:
-PKG_PATH = $(GOPATH)/src/$(IMPORT_PATH)
-
 # The absolute path for the passphrase binary installation:
 BIN_PATH = $(GOPATH)/bin/passphrase
 
 # Dependencies to build the passphrase command-line interface:
-CLI_DEPS = $(PKG_PATH) passphrase/cli.go passphrase.go words.go
+CLI_DEPS = passphrase/cli.go passphrase.go words.go
 
 # Dependencies to build the lambda application:
-LAMBDA_DEPS = $(PKG_PATH) vendor lambda/lambda.go passphrase.go words.go
+LAMBDA_DEPS = vendor lambda/lambda.go passphrase.go words.go
 
 
 # --- Main targets ---
@@ -123,18 +117,13 @@ clean:
 	destroy \
 	clean
 
-# Creates a symlink from the project import path to this directory.
-# This allows working with a project outside of $GOPATH:
-$(PKG_PATH):
-	mkdir -p $@; cd $@/..; rm -rf passphrase; ln -s '$(PWD)'
-
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
 $(BIN_PATH): $(CLI_DEPS)
-	go install $(IMPORT_PATH)/passphrase
+	go install ./passphrase
 
 # Install dependencies via `dep ensure` if available, else via `go get`:
-vendor: $(PKG_PATH)
-	if command -v dep > /dev/null 2>&1; then cd $(PKG_PATH); dep ensure; \
+vendor:
+	if command -v dep > /dev/null 2>&1; then dep ensure; \
 		else go get -d ./... && mkdir vendor; fi
 
 # Builds the CLI binary:
@@ -146,8 +135,7 @@ passphrase/passphrase: $(CLI_DEPS)
 #   -s  disable symbol table
 #   -w  disable DWARF generation
 lambda/bin/main: $(LAMBDA_DEPS)
-	cd $(PKG_PATH)/lambda; \
-		GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o bin/main
+	cd lambda; GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o bin/main
 
 # Generates the word list as go code if generate.go or words.txt change:
 words.go: generate.go words.txt

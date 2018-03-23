@@ -47,6 +47,13 @@ length of `3` characters) are filtered out.
 The updated word list module can then be used in a new build.
 
 ## Build
+First, clone the project via `go get` and then switch into its source directory:
+
+```sh
+go get github.com/blueimp/passphrase
+cd "$GOPATH/src/github.com/blueimp/passphrase"
+```
+
 *Please note:*  
 If [dep](https://github.com/golang/dep) is installed, dependencies are installed
 with a defined version into the `vendor` directory, else their latest version is
