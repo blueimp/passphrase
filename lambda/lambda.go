@@ -46,8 +46,11 @@ func Handler(request *events.APIGatewayProxyRequest) (
 	}
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Headers:    map[string]string{"content-type": "text/plain; charset=utf-8"},
-		Body:       pass,
+		Headers: map[string]string{
+			"cache-control": "private",
+			"content-type":  "text/plain; charset=utf-8",
+		},
+		Body: pass,
 	}, nil
 }
 

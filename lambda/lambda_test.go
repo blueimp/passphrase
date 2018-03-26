@@ -38,6 +38,12 @@ func TestHandler(t *testing.T) {
 	if response.StatusCode != 200 {
 		t.Errorf("Expected status code 200, got: %d", response.StatusCode)
 	}
+	if response.Headers["cache-control"] != "private" {
+		t.Errorf(
+			"Expected cache-control \"private\", got: \"%s\"",
+			response.Headers["cache-control"],
+		)
+	}
 	if response.Headers["content-type"] != "text/plain; charset=utf-8" {
 		t.Errorf(
 			"Expected content-type \"text/plain\", got: \"%s\"",
