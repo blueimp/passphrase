@@ -13,7 +13,7 @@ import (
 const defaultNumber = 4
 const maxNumber = 100
 
-func number(request events.APIGatewayProxyRequest) int {
+func number(request *events.APIGatewayProxyRequest) int {
 	parameter := request.QueryStringParameters["n"]
 	if parameter == "" {
 		return defaultNumber
@@ -25,7 +25,7 @@ func number(request events.APIGatewayProxyRequest) int {
 	return number
 }
 
-func logRequest(request events.APIGatewayProxyRequest) {
+func logRequest(request *events.APIGatewayProxyRequest) {
 	encodedRequest, err := json.Marshal(request)
 	if err != nil {
 		log.Println("Error:", err)
@@ -35,7 +35,7 @@ func logRequest(request events.APIGatewayProxyRequest) {
 }
 
 // Handler is the Lambda function handler:
-func Handler(request events.APIGatewayProxyRequest) (
+func Handler(request *events.APIGatewayProxyRequest) (
 	events.APIGatewayProxyResponse,
 	error,
 ) {

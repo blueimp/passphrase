@@ -24,7 +24,7 @@ func param(number int) map[string]string {
 }
 
 func passphraseRequest(params map[string]string) events.APIGatewayProxyResponse {
-	response, err := Handler(events.APIGatewayProxyRequest{
+	response, err := Handler(&events.APIGatewayProxyRequest{
 		QueryStringParameters: params,
 	})
 	if err != nil {
