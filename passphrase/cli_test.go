@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -19,14 +20,40 @@ func stringInList(str string, list []string) bool {
 	return false
 }
 
-func generatePassphrase(args []string) (pass string, err error) {
+func generatePassphrase(args []string) (code int, out string, err string) {
 	os.Args = append([]string{"noop"}, args...)
-	return Passphrase()
+	outReader, outWriter, _ := os.Pipe()
+	errReader, errWriter, _ := os.Pipe()
+	originalOut := os.Stdout
+	originalErr := os.Stderr
+	defer func() {
+		os.Stdout = originalOut
+		os.Stderr = originalErr
+	}()
+	os.Stdout = outWriter
+	os.Stderr = errWriter
+	exit = func(c int) {
+		code = c
+	}
+	func() {
+		main()
+		outWriter.Close()
+		errWriter.Close()
+	}()
+	stdout, _ := ioutil.ReadAll(outReader)
+	stderr, _ := ioutil.ReadAll(errReader)
+	return code, string(stdout), string(stderr)
 }
 
 func TestPassphrase(t *testing.T) {
-	str, _ := generatePassphrase([]string{})
-	number := len(strings.Split(str, " "))
+	code, out, err := generatePassphrase([]string{})
+	if code != 0 {
+		t.Errorf("Unexpected status code, got %d, expected: %d.", code, 0)
+	}
+	if err != "" {
+		t.Errorf("Unexpected error output: %s.", err)
+	}
+	number := len(strings.Split(out, " "))
 	if number != defaultNumber {
 		t.Errorf(
 			"Incorrect default number of words, got: %d, expected: %d.",
@@ -34,36 +61,47 @@ func TestPassphrase(t *testing.T) {
 			number,
 		)
 	}
-	str, err := generatePassphrase([]string{"test"})
-	if str != "" {
-		t.Errorf("Expected empty passphrase, got: %s", str)
+	code, out, err = generatePassphrase([]string{"test"})
+	if code != 1 {
+		t.Errorf("Unexpected status code, got %d, expected: %d.", code, -1)
 	}
-	if err == nil {
-		t.Errorf("Expected error object, got nil")
-	} else if err.Error() != "argument is not a natural number: test" {
+	if err != "argument is not a natural number: test\n" {
 		t.Errorf("Expected \"not a natural number\" error, got: \"%s\"", err)
 	}
-	str, err = generatePassphrase([]string{"0"})
-	if str != "" {
-		t.Errorf("Expected empty passphrase, got: %s", str)
+	if out != "\n" {
+		t.Errorf("Expected empty passphrase, got: %s", out)
 	}
-	if err != nil {
-		t.Errorf("Expected no error object, got: \"%s\"", err)
+	code, out, err = generatePassphrase([]string{"0"})
+	if code != 0 {
+		t.Errorf("Unexpected status code, got %d, expected: %d.", code, 0)
+	}
+	if err != "" {
+		t.Errorf("Unexpected error output: %s.", err)
+	}
+	if out != "\n" {
+		t.Errorf("Expected empty passphrase, got: %s", out)
 	}
 	for i := -1; i >= -10; i-- {
-		str, err := generatePassphrase([]string{strconv.Itoa(i)})
-		if str != "" {
-			t.Errorf("Expected empty passphrase, got: %s", str)
+		code, out, err := generatePassphrase([]string{strconv.Itoa(i)})
+		if code != 1 {
+			t.Errorf("Unexpected status code, got %d, expected: %d.", code, -1)
 		}
-		if err == nil {
-			t.Errorf("Expected error object, got nil")
-		} else if err.Error() != fmt.Sprintf("argument is not a natural number: %d", i) {
+		if err != fmt.Sprintf("argument is not a natural number: %d\n", i) {
 			t.Errorf("Expected \"not a natural number\" error, got: \"%s\"", err)
+		}
+		if out != "\n" {
+			t.Errorf("Expected empty passphrase, got: %s", out)
 		}
 	}
 	for i := 1; i <= 10; i++ {
-		str, _ := generatePassphrase([]string{strconv.Itoa(i)})
-		words := strings.Split(str, " ")
+		code, out, err := generatePassphrase([]string{strconv.Itoa(i)})
+		if code != 0 {
+			t.Errorf("Unexpected status code, got %d, expected: %d.", code, 0)
+		}
+		if err != "" {
+			t.Errorf("Unexpected error output: %s.", err)
+		}
+		words := strings.Split(strings.TrimSuffix(out, "\n"), " ")
 		number := len(words)
 		if number != i {
 			t.Errorf("Incorrect number of words, got: %d, expected: %d.", number, i)

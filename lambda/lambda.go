@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"log"
-	"strconv"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -12,18 +11,6 @@ import (
 
 const defaultNumber = 4
 const maxNumber = 100
-
-func number(request *events.APIGatewayProxyRequest) int {
-	parameter := request.QueryStringParameters["n"]
-	if parameter == "" {
-		return defaultNumber
-	}
-	number, err := strconv.Atoi(parameter)
-	if err != nil || number > maxNumber {
-		return maxNumber
-	}
-	return number
-}
 
 func logRequest(request *events.APIGatewayProxyRequest) {
 	encodedRequest, err := json.Marshal(request)
@@ -40,15 +27,22 @@ func Handler(request *events.APIGatewayProxyRequest) (
 	error,
 ) {
 	logRequest(request)
-	pass, err := passphrase.Passphrase(number(request))
+	number := passphrase.ParseNumber(
+		request.QueryStringParameters["n"],
+		defaultNumber,
+		maxNumber,
+	)
+	pass, err := passphrase.String(number)
 	if err != nil {
 		return events.APIGatewayProxyResponse{}, err
 	}
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
 		Headers: map[string]string{
-			"cache-control": "private",
-			"content-type":  "text/plain; charset=utf-8",
+			"cache-control":             "private",
+			"content-type":              "text/plain;charset=utf-8",
+			"strict-transport-security": "max-age=31536000;includeSubDomains;preload",
+			"x-content-type-options":    "nosniff",
 		},
 		Body: pass,
 	}, nil

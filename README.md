@@ -44,13 +44,15 @@ import (
 	"github.com/blueimp/passphrase"
 )
 
+var exit = os.Exit
+
 func main() {
-	pass, err := passphrase.Passphrase(4)
+	_, err := passphrase.Write(os.Stdout, 4)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+		exit(1)
 	}
-	fmt.Println(pass)
+	fmt.Println()
 }
 ```
 
