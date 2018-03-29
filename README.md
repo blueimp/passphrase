@@ -112,9 +112,13 @@ cd "$GOPATH/src/github.com/blueimp/passphrase"
 ```
 
 *Please note:*  
-If [dep](https://github.com/golang/dep) is installed, dependencies are installed
-with a defined version into the `vendor` directory, else their latest version is
-installed via `go get`.
+This project relies on [vgo](https://github.com/golang/go/wiki/vgo) for
+automatic dependency resolution.  
+To use the original go tool instead, export the following environment variable:
+
+```sh
+export GO_CLI=go
+```
 
 To build both the CLI and the AWS Lambda function binary, run
 [Make](https://en.wikipedia.org/wiki/Make_\(software\)) in the repository:
