@@ -120,21 +120,11 @@ To use the original go tool instead, export the following environment variable:
 export GO_CLI=go
 ```
 
-To build both the CLI and the AWS Lambda function binary, run
+To build the CLI binary, run
 [Make](https://en.wikipedia.org/wiki/Make_\(software\)) in the repository:
 
 ```sh
 make
-```
-
-Both components can also be built individually:
-
-```sh
-make passphrase
-```
-
-```sh
-make lambda
 ```
 
 The locally built binary can be installed at `$GOPATH/bin/passphrase` with the
@@ -212,6 +202,13 @@ LAMBDA_ROLE=arn:aws:iam::000000000000:role/aws-lambda-basic-execution-role
 AWS_REGION=eu-west-1
 ```
 
+### Build
+To build the AWS Lambda function binary, run the following:
+
+```sh
+make lambda
+```
+
 ### Deploy
 To package and deploy the function, execute the following:
 
@@ -250,23 +247,11 @@ To invoke the function locally, execute the following:
 make invoke
 ```
 
-To start a local API Gateway in a background process, use the following command:
-
-```sh
-make start
-```
-
-To stop the local API Gateway background process again, execute this command:
-
-```sh
-make stop
-```
-
 To start the local API Gateway along with a watch process for source file
 changes, run the following:
 
 ```sh
-[BROWSER=chrome|safari|firefox] make watch
+[BROWSER=chrome|safari|firefox] make start
 ```
 
 The watch task recompiles the lambda binary on changes.  

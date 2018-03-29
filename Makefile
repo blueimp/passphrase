@@ -26,11 +26,8 @@ LAMBDA_DEPS = lambda/lambda.go lambda/go.mod passphrase.go words.go
 
 # --- Main targets ---
 
-# The default target builds both the CLI and lambda binaries:
-all: passphrase lambda
-
-# Builds the CLI binary:
-passphrase: passphrase/passphrase
+# The default target builds the CLI binary:
+all: passphrase/passphrase
 
 # Cross-compiles the lambda binary:
 lambda: lambda/bin/main
@@ -59,18 +56,10 @@ event: lambda/event.json
 invoke: lambda/event.json lambda/bin/main
 	cd lambda; $(FAKE_AWS_ENV) sam local invoke -e event.json
 
-# Starts a local API Gateway for the lambda function as background process:
-start: lambda/bin/main
-	cd lambda; $(FAKE_AWS_ENV) sam local start-api & echo "$$!" > server.pid
-
-# Stops the local API Gateway:
-stop:
-	cd lambda; test -f server.pid && kill "$$(cat server.pid)" && rm server.pid
-
 # Starts the local API Gateway and a watch process for the lambda function,
 # on MacOS also automatically reloads the active Chrome/Safari/Firefox tab:
-watch:
-	@exec ./watch.sh $(BROWSER)
+start:
+	@exec ./start.sh $(BROWSER)
 
 # Deploys the lambda function to AWS:
 deploy: lambda/deployed.txt url
@@ -113,8 +102,6 @@ clean:
 	event \
 	invoke \
 	start \
-	stop \
-	watch \
 	deploy \
 	url \
 	destroy \
