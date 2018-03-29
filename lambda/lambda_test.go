@@ -7,16 +7,8 @@ import (
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/blueimp/passphrase"
+	istrings "github.com/blueimp/passphrase/internal/strings"
 )
-
-func stringInList(str string, list []string) bool {
-	for _, s := range list {
-		if s == str {
-			return true
-		}
-	}
-	return false
-}
 
 func param(number int) map[string]string {
 	parameter := strconv.Itoa(number)
@@ -86,7 +78,7 @@ func TestHandler(t *testing.T) {
 			t.Errorf("Incorrect number of words, got: %d, expected: %d.", number, i)
 		}
 		for _, word := range words {
-			if !stringInList(word, passphrase.Words[:]) {
+			if !istrings.InSlice(word, passphrase.Words[:]) {
 				t.Errorf("Passphrase word is not in the word list: %s", word)
 			}
 			if len(word) < passphrase.MinWordLength {
@@ -110,7 +102,7 @@ func TestHandler(t *testing.T) {
 			)
 		}
 		for _, word := range words {
-			if !stringInList(word, passphrase.Words[:]) {
+			if !istrings.InSlice(word, passphrase.Words[:]) {
 				t.Errorf("Passphrase word is not in the word list: %s", word)
 			}
 			if len(word) < passphrase.MinWordLength {

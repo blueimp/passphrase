@@ -9,16 +9,8 @@ import (
 	"testing"
 
 	"github.com/blueimp/passphrase"
+	istrings "github.com/blueimp/passphrase/internal/strings"
 )
-
-func stringInList(str string, list []string) bool {
-	for _, s := range list {
-		if s == str {
-			return true
-		}
-	}
-	return false
-}
 
 func generatePassphrase(args []string) (code int, out string, err string) {
 	os.Args = append([]string{"noop"}, args...)
@@ -45,7 +37,7 @@ func generatePassphrase(args []string) (code int, out string, err string) {
 	return code, string(stdout), string(stderr)
 }
 
-func TestPassphrase(t *testing.T) {
+func TestMain(t *testing.T) {
 	code, out, err := generatePassphrase([]string{})
 	if code != 0 {
 		t.Errorf("Unexpected status code, got %d, expected: %d.", code, 0)
@@ -107,7 +99,7 @@ func TestPassphrase(t *testing.T) {
 			t.Errorf("Incorrect number of words, got: %d, expected: %d.", number, i)
 		}
 		for _, word := range words {
-			if !stringInList(word, passphrase.Words[:]) {
+			if !istrings.InSlice(word, passphrase.Words[:]) {
 				t.Errorf("Passphrase word is not in the word list: %s", word)
 			}
 			if len(word) < passphrase.MinWordLength {

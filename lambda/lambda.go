@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/blueimp/passphrase"
+	"github.com/blueimp/passphrase/internal/parse"
 )
 
 const defaultNumber = 4
@@ -27,7 +28,7 @@ func Handler(request *events.APIGatewayProxyRequest) (
 	error,
 ) {
 	logRequest(request)
-	number := passphrase.ParseNumber(
+	number := parse.NaturalNumber(
 		request.QueryStringParameters["n"],
 		defaultNumber,
 		maxNumber,

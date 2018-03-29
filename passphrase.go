@@ -7,11 +7,7 @@ import (
 	"crypto/rand"
 	"io"
 	"math/big"
-	"strconv"
 )
-
-// MaxInt is the naximum integer value on this platform:
-const MaxInt = int(^uint(0) >> 1)
 
 type result struct {
 	Number int64
@@ -24,35 +20,6 @@ func randomNumber(maxLength int64, results chan result) {
 		results <- result{0, err}
 	}
 	results <- result{bigInt.Int64(), nil}
-}
-
-// ParseNumber interprets the given string parameter as natural number.
-// The defaultNumber is returned if the parameter is empty.
-// The maxNumber is returned if the parameter exceeds its size.
-// Zero is returned if the interpreted string is not a natural number.
-func ParseNumber(parameter string, defaultNumber int, maxNumber int) int {
-	var number int
-	if parameter == "" {
-		number = defaultNumber
-	} else {
-		var err error
-		number, err = strconv.Atoi(parameter)
-		if err != nil {
-			numError, ok := err.(*strconv.NumError)
-			if ok && numError.Err == strconv.ErrRange && string(parameter[0]) != "-" {
-				number = MaxInt
-			} else {
-				number = 0
-			}
-		}
-	}
-	if number < 1 {
-		return 0
-	}
-	if number > maxNumber {
-		return maxNumber
-	}
-	return number
 }
 
 // Write writes a passphrase with the given number of words:

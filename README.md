@@ -32,7 +32,9 @@ First clone the project via `go get`:
 go get github.com/blueimp/passphrase
 ```
 
-The `passphrase` library can then be imported and used the following way:
+The `passphrase` library can then be imported and used with any type
+implementing the [io.Writer interface](https://golang.org/pkg/io/#Writer), e.g.
+`os.Stdout`:
 
 ```go
 package main
@@ -53,6 +55,30 @@ func main() {
 		exit(1)
 	}
 	fmt.Println()
+}
+```
+
+Or alternatively with a simple `string` return value:
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/blueimp/passphrase"
+)
+
+var exit = os.Exit
+
+func main() {
+	pass, err := passphrase.String(4)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		exit(1)
+	}
+	fmt.Println(pass)
 }
 ```
 

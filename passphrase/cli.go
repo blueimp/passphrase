@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/blueimp/passphrase"
+	"github.com/blueimp/passphrase/internal/parse"
 )
 
 const defaultNumber = 4
@@ -16,7 +17,7 @@ func main() {
 	var number int
 	if len(os.Args) > 1 {
 		arg := os.Args[1]
-		number = passphrase.ParseNumber(
+		number = parse.NaturalNumber(
 			arg,
 			defaultNumber,
 			maxNumber,

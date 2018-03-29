@@ -37,10 +37,8 @@ words:
 	go generate
 
 # Runs the unit tests for all components:
-test: words.go
-	@go test .
-	@cd passphrase; go test .
-	@cd lambda; go test .
+test:
+	@go test ./...
 
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
 install: $(BIN_PATH)
