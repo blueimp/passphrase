@@ -1,0 +1,23 @@
+runtime: go
+api_version: go1
+
+handlers:
+# Root page:
+- url: /
+  script: _go_app
+  secure: always
+  redirect_http_response_code: 301
+# Public files in the root directory:
+- url: /(favicon\.ico|robots\.txt)$
+  static_files: \1
+  upload: ^(favicon\.ico|robots\.txt)$
+  secure: always
+  redirect_http_response_code: 301
+  expiration: 1h
+  http_headers:
+    strict-transport-security: max-age=31536000;includeSubDomains;preload
+    x-content-type-options: nosniff
+
+# Files to ignore when uploading the application to Google Cloud Storage:
+skip_files:
+- ^(.*/)?\..*$

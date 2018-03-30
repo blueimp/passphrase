@@ -6,5 +6,4 @@ debug.test
 /lambda/deployed.txt
 /lambda/event.json
 /lambda/passphrase.url
-/lambda/server.pid
 /passphrase/passphrase

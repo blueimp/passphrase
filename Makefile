@@ -3,6 +3,10 @@
 # Include .env file if available:
 -include .env
 
+# The platform to use for local development and deployment.
+# Can be either "appengine" or "lambda":
+PLATFORM ?= appengine
+
 # Fake AWS credentials as fix for AWS SAM Local issue #134:
 # See also https://github.com/awslabs/aws-sam-local/issues/134
 FAKE_AWS_ENV = AWS_ACCESS_KEY_ID=0 AWS_SECRET_ACCESS_KEY=0
@@ -40,6 +44,7 @@ words:
 test: words.go
 	@$(GO_CLI) test .
 	@cd passphrase; $(GO_CLI) test .
+	@cd appengine; $(GO_CLI) test .
 	@cd lambda; $(GO_CLI) test .
 
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
@@ -56,13 +61,18 @@ event: lambda/event.json
 invoke: lambda/event.json lambda/bin/main
 	cd lambda; $(FAKE_AWS_ENV) sam local invoke -e event.json
 
-# Starts the local API Gateway and a watch process for the lambda function,
-# on MacOS also automatically reloads the active Chrome/Safari/Firefox tab:
-start:
-	@exec ./start.sh $(BROWSER)
+# Starts a local server for the given platform:
+start: $(PLATFORM)-start
 
-# Deploys the lambda function to AWS:
-deploy: lambda/deployed.txt url
+# Starts a local server for the given platform and a watch process:
+watch: $(PLATFORM)-watch
+
+# Deploys the project for the given platform:
+deploy: $(PLATFORM)-deploy
+
+# Opens a browser tab with the production URL of the App Engine project:
+browse:
+	cd appengine; gcloud app browse --project $(PROJECT)
 
 # Prints the API Gateway URL of the deployed lambda function:
 url: lambda/passphrase.url
@@ -102,9 +112,17 @@ clean:
 	event \
 	invoke \
 	start \
+	watch \
 	deploy \
+	browse \
 	url \
 	destroy \
+	appengine-start \
+	appengine-watch \
+	appengine-deploy \
+	lambda-start \
+	lambda-watch \
+	lambda-deploy \
 	clean
 
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
@@ -115,6 +133,37 @@ $(BIN_PATH): $(CLI_DEPS)
 passphrase/passphrase: $(CLI_DEPS)
 	cd passphrase; $(GO_CLI) build
 
+# Generates the word list as go code if generate.go or words.txt change:
+words.go: generate.go words.txt
+	$(GO_CLI) generate
+
+# Starts a local App Engine server:
+appengine-start:
+	cd appengine; dev_appserver.py .
+
+# Starts a local App Engine server and a watch process for source file changes,
+# on MacOS also automatically reloads the active Chrome/Safari/Firefox tab:
+appengine-watch:
+	@exec ./watch.sh start $(BROWSER)
+
+# Deploys the App Engine project to Google Cloud:
+appengine-deploy:
+	cd appengine; gcloud app deploy --project $(PROJECT) --version $(VERSION)
+
+# Starts a local API Gateway:
+# Fake AWS credentials as fix for AWS SAM Local issue #134:
+# See also https://github.com/awslabs/aws-sam-local/issues/134
+lambda-start:
+	cd lambda; AWS_ACCESS_KEY_ID=0 AWS_SECRET_ACCESS_KEY=0 sam local start-api
+
+# Starts a local API Gateway and a watch process for source file changes,
+# on MacOS also automatically reloads the active Chrome/Safari/Firefox tab:
+lambda-watch:
+	@exec ./watch.sh start $(BROWSER) -- make -s lambda
+
+# Deploys the lambda function to AWS:
+lambda-deploy: lambda/deployed.txt url
+
 # Cross-compiles the lambda binary:
 # ldflags explanation (see `go tool link`):
 #   -s  disable symbol table
@@ -122,10 +171,6 @@ passphrase/passphrase: $(CLI_DEPS)
 lambda/bin/main: $(LAMBDA_DEPS)
 	cd lambda; \
 		GOOS=linux GOARCH=amd64 $(GO_CLI) build -ldflags='-s -w' -o bin/main
-
-# Generates the word list as go code if generate.go or words.txt change:
-words.go: generate.go words.txt
-	$(GO_CLI) generate
 
 # Generates a sample lambda event:
 lambda/event.json:

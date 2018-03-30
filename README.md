@@ -113,11 +113,18 @@ cd "$GOPATH/src/github.com/blueimp/passphrase"
 
 *Please note:*  
 This project relies on [vgo](https://github.com/golang/go/wiki/vgo) for
-automatic dependency resolution.  
+automatic dependency resolution.
+
 To use the original go tool instead, export the following environment variable:
 
 ```sh
 export GO_CLI=go
+```
+
+And install the project dependencies:
+
+```sh
+go get ./...
 ```
 
 To build the CLI binary, run
@@ -153,6 +160,83 @@ All components come with unit tests, which can be executed the following way:
 make test
 ```
 
+## Google App Engine
+Passphrase can be deployed as
+[Google App Engine](https://cloud.google.com/appengine/docs/go/) application.
+
+The application accepts a query parameter `n` to define the number of words to
+generate, but limits the sequence to `100` words, e.g.:
+
+```
+https://PROJECT.appspot.com/?n=100
+```
+
+### Requirements
+App engine development and deployment requires the
+[Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/go/download)
+with the `app-engine-go` component.
+
+On MacOS, `google-cloud-sdk` can been installed via
+[Homebrew Cask](https://caskroom.github.io/).
+
+```sh
+brew cask install google-cloud-sdk
+gcloud components install app-engine-go
+```
+
+To make `dev_appserver.py` available in the `PATH`, a symlink has to be added:
+
+```sh
+ln -s /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin/dev_* \
+	/usr/local/bin/
+```
+
+The local watch task requires [entr](https://bitbucket.org/eradman/entr) to be
+installed, which is available in the repositories of popular Linux distributions
+and can be installed on MacOS via [Homebrew](https://brew.sh/):
+
+```sh
+brew install entr
+```
+
+### Environment variables
+The following variables have to be set, e.g. by adding them to a `.env` file,
+which gets included in the provided `Makefile`:
+
+```sh
+# The App Engine project:
+PROJECT=passphrasebot
+# The App Engine project version:
+VERSION=1
+```
+
+### Deploy
+To deploy the application, execute the following:
+
+```sh
+make deploy
+```
+
+To open the URL of the application in a browser tap, run the following:
+
+```sh
+make browse
+```
+
+### Local development
+To start a local App Engine server, run the following:
+
+```sh
+make start
+```
+
+On MacOS, to also automatically reload the active Chrome/Safari/Firefox tab, run
+the following:
+
+```sh
+[BROWSER=chrome|safari|firefox] make watch
+```
+
 ## AWS Lambda
 Passphrase can be deployed as [AWS lambda](https://aws.amazon.com/lambda/)
 function with an [API Gateway](https://aws.amazon.com/api-gateway/) triggger.
@@ -183,10 +267,12 @@ brew install entr
 ```
 
 ### Environment variables
-To be able to deploy, the following variables have to be set, e.g. by adding
-them to a `.env` file, which gets included in the provided `Makefile`:
+The following variables have to be set, e.g. by adding them to a `.env` file,
+which gets included in the provided `Makefile`:
 
 ```sh
+# Platform to use for local development and deployment:
+PLATFORM=lambda
 # The AWS profile to use for aws-vault:
 AWS_PROFILE=default
 # The S3 bucket where the lambda package can be uploaded:
@@ -216,7 +302,8 @@ To package and deploy the function, execute the following:
 make deploy
 ```
 
-After the deployment succeeds, the [API Gateway](https://aws.amazon.com/api-gateway/) URL is printed.
+After the deployment succeeds, the
+[API Gateway](https://aws.amazon.com/api-gateway/) URL is printed.
 
 This URL can also be retrieved later with the following command:
 
@@ -251,7 +338,7 @@ To start the local API Gateway along with a watch process for source file
 changes, run the following:
 
 ```sh
-[BROWSER=chrome|safari|firefox] make start
+[BROWSER=chrome|safari|firefox] make watch
 ```
 
 The watch task recompiles the lambda binary on changes.  
