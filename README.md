@@ -1,8 +1,8 @@
 # Passphrase
 > Better passwords by combining random words.
 
-Passphrase is a Go library, command-line interface and AWS Lambda function to
-generate a random sequence of words.
+Passphrase is a Go library, command-line interface, Google App Engine
+application and AWS Lambda function to generate a random sequence of words.
 
 It is inspired by Randall Munroe's [xkcd webcomic #936](https://xkcd.com/936/)
 with the title "Password Strength":
@@ -95,11 +95,11 @@ The words module can be generated the following way:
 WORD_LIST_URL=words.txt MIN_WORD_LENGTH=3 make words
 ```
 
-The `WORD_LIST_URL` variable can point to a URL or a local file path and
-falls back to `words.txt`.
+The `WORD_LIST_URL` variable can point to a URL or a local file path and falls
+back to `words.txt`.
 
-Words shorter than `MIN_WORD_LENGTH` (defaults to a minimum word
-length of `3` characters) are filtered out.
+Words shorter than `MIN_WORD_LENGTH` (defaults to a minimum word length of `3`
+characters) are filtered out.
 
 The updated word list module can then be used in a new build.
 
@@ -176,7 +176,7 @@ App engine development and deployment requires the
 [Google Cloud SDK](https://cloud.google.com/appengine/docs/standard/go/download)
 with the `app-engine-go` component.
 
-On MacOS, `google-cloud-sdk` can been installed via
+On MacOS, `google-cloud-sdk` can be installed via
 [Homebrew Cask](https://caskroom.github.io/).
 
 ```sh
@@ -217,7 +217,7 @@ To deploy the application, execute the following:
 make deploy
 ```
 
-To open the URL of the application in a browser tap, run the following:
+To open the URL of the application in a browser tab, run the following:
 
 ```sh
 make browse
@@ -271,7 +271,7 @@ The following variables have to be set, e.g. by adding them to a `.env` file,
 which gets included in the provided `Makefile`:
 
 ```sh
-# Platform to use for local development and deployment:
+# Platform to use for local development and deployment (appengine or lambda):
 PLATFORM=lambda
 # The AWS profile to use for aws-vault:
 AWS_PROFILE=default
