@@ -2,6 +2,7 @@ package passphrase
 
 import (
 	"bytes"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -70,3 +71,27 @@ func TestString(t *testing.T) {
 		}
 	}
 }
+
+func benchmarkWrite(i int, b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		Write(ioutil.Discard, i)
+	}
+}
+
+func benchmarkString(i int, b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		String(i)
+	}
+}
+
+func BenchmarkWrite4(b *testing.B)    { benchmarkWrite(4, b) }
+func BenchmarkWrite16(b *testing.B)   { benchmarkWrite(16, b) }
+func BenchmarkWrite64(b *testing.B)   { benchmarkWrite(64, b) }
+func BenchmarkWrite256(b *testing.B)  { benchmarkWrite(256, b) }
+func BenchmarkWrite1024(b *testing.B) { benchmarkWrite(1024, b) }
+
+func BenchmarkString4(b *testing.B)    { benchmarkString(4, b) }
+func BenchmarkString16(b *testing.B)   { benchmarkString(16, b) }
+func BenchmarkString64(b *testing.B)   { benchmarkString(64, b) }
+func BenchmarkString256(b *testing.B)  { benchmarkString(256, b) }
+func BenchmarkString1024(b *testing.B) { benchmarkString(1024, b) }
