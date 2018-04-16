@@ -1,4 +1,4 @@
-package passphrase
+package passphrase_test
 
 import (
 	"bytes"
@@ -6,13 +6,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/blueimp/passphrase"
 	istrings "github.com/blueimp/passphrase/internal/strings"
 )
 
 func TestWrite(t *testing.T) {
 	var buffer bytes.Buffer
 	for i := 0; i > -10; i-- {
-		Write(&buffer, i)
+		passphrase.Write(&buffer, i)
 		str := string(buffer.Bytes())
 		buffer.Reset()
 		if str != "" {
@@ -20,7 +21,7 @@ func TestWrite(t *testing.T) {
 		}
 	}
 	for i := 1; i <= 10; i++ {
-		Write(&buffer, i)
+		passphrase.Write(&buffer, i)
 		str := string(buffer.Bytes())
 		buffer.Reset()
 		words := strings.Split(str, " ")
@@ -29,13 +30,13 @@ func TestWrite(t *testing.T) {
 			t.Errorf("Incorrect number of words, got: %d, expected: %d.", number, i)
 		}
 		for _, word := range words {
-			if !istrings.InSlice(word, Words[:]) {
+			if !istrings.InSlice(word, passphrase.Words[:]) {
 				t.Errorf("Passphrase word is not in the word list: %s", word)
 			}
-			if len(word) < MinWordLength {
+			if len(word) < passphrase.MinWordLength {
 				t.Errorf(
 					"Passphrase word is shorter than %d characters: %s",
-					MinWordLength,
+					passphrase.MinWordLength,
 					word,
 				)
 			}
@@ -45,26 +46,26 @@ func TestWrite(t *testing.T) {
 
 func TestString(t *testing.T) {
 	for i := 0; i > -10; i-- {
-		str, _ := String(i)
+		str, _ := passphrase.String(i)
 		if str != "" {
 			t.Errorf("Expected empty passphrase, got: %s", str)
 		}
 	}
 	for i := 1; i <= 10; i++ {
-		str, _ := String(i)
+		str, _ := passphrase.String(i)
 		words := strings.Split(str, " ")
 		number := len(words)
 		if number != i {
 			t.Errorf("Incorrect number of words, got: %d, expected: %d.", number, i)
 		}
 		for _, word := range words {
-			if !istrings.InSlice(word, Words[:]) {
+			if !istrings.InSlice(word, passphrase.Words[:]) {
 				t.Errorf("Passphrase word is not in the word list: %s", word)
 			}
-			if len(word) < MinWordLength {
+			if len(word) < passphrase.MinWordLength {
 				t.Errorf(
 					"Passphrase word is shorter than %d characters: %s",
-					MinWordLength,
+					passphrase.MinWordLength,
 					word,
 				)
 			}
@@ -74,13 +75,13 @@ func TestString(t *testing.T) {
 
 func benchmarkWrite(i int, b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		Write(ioutil.Discard, i)
+		passphrase.Write(ioutil.Discard, i)
 	}
 }
 
 func benchmarkString(i int, b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		String(i)
+		passphrase.String(i)
 	}
 }
 
