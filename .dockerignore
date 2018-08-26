@@ -1,4 +1,7 @@
 *
+!internal/parse/parse.go
 !passphrase/cli.go
+!passphrase/go.mod
+!go.mod
 !passphrase.go
 !words.go
