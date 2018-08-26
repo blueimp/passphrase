@@ -1,1 +1,1 @@
-module "github.com/blueimp/passphrase"
+module github.com/blueimp/passphrase

@@ -15,9 +15,6 @@ FAKE_AWS_ENV = AWS_ACCESS_KEY_ID=0 AWS_SECRET_ACCESS_KEY=0
 # can be overriden by defining the AWS_CLI environment variable:
 AWS_CLI ?= aws-vault exec '$(AWS_PROFILE)' -- aws
 
-# GO CLI set to vgo for automatic dependency resolution:
-GO_CLI ?= vgo
-
 # The absolute path for the passphrase binary installation:
 BIN_PATH = $(GOPATH)/bin/passphrase
 
@@ -38,14 +35,14 @@ lambda: lambda/bin/main
 
 # Generates the word list as go code:
 words:
-	$(GO_CLI) generate
+	go generate
 
 # Runs the unit tests for all components:
 test: words.go
-	@$(GO_CLI) test .
-	@cd passphrase; $(GO_CLI) test .
-	@cd appengine; $(GO_CLI) test .
-	@cd lambda; $(GO_CLI) test .
+	@go test ./...
+	@cd passphrase; go test ./...
+	@cd appengine; go test ./...
+	@cd lambda; go test ./...
 
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
 install: $(BIN_PATH)
@@ -127,15 +124,15 @@ clean:
 
 # Installs the passphrase binary at $GOPATH/bin/passphrase:
 $(BIN_PATH): $(CLI_DEPS)
-	$(GO_CLI) install ./passphrase
+	cd passphrase; go install
 
-# Builds the CLI binary:
+# Builds the passphrase binary:
 passphrase/passphrase: $(CLI_DEPS)
-	cd passphrase; $(GO_CLI) build
+	cd passphrase; go build
 
 # Generates the word list as go code if generate.go or words.txt change:
 words.go: generate.go words.txt
-	$(GO_CLI) generate
+	go generate
 
 # Starts a local App Engine server:
 appengine-start:
@@ -170,7 +167,7 @@ lambda-deploy: lambda/deployed.txt url
 #   -w  disable DWARF generation
 lambda/bin/main: $(LAMBDA_DEPS)
 	cd lambda; \
-		GOOS=linux GOARCH=amd64 $(GO_CLI) build -ldflags='-s -w' -o bin/main
+		GOOS=linux GOARCH=amd64 go build -ldflags='-s -w' -o bin/main
 
 # Generates a sample lambda event:
 lambda/event.json:

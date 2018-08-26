@@ -104,28 +104,16 @@ characters) are filtered out.
 The updated word list module can then be used in a new build.
 
 ## Build
-First, clone the project via `go get` and then switch into its source directory:
+First, clone the project and then switch into its source directory:
 
 ```sh
-go get github.com/blueimp/passphrase
-cd "$GOPATH/src/github.com/blueimp/passphrase"
+git clone https://github.com/blueimp/passphrase.git
+cd passphrase
 ```
 
 *Please note:*  
-This project relies on [vgo](https://github.com/golang/go/wiki/vgo) for
-automatic dependency resolution.
-
-To use the original go tool instead, export the following environment variable:
-
-```sh
-export GO_CLI=go
-```
-
-And install the project dependencies:
-
-```sh
-go get ./...
-```
+This project relies on [Go modules](https://github.com/golang/go/wiki/Modules)
+for automatic dependency resolution.
 
 To build the CLI binary, run
 [Make](https://en.wikipedia.org/wiki/Make_\(software\)) in the repository:
@@ -197,6 +185,25 @@ and can be installed on MacOS via [Homebrew](https://brew.sh/):
 
 ```sh
 brew install entr
+```
+
+### Dependencies
+App Engine does not support
+[Go modules](https://github.com/golang/go/wiki/Modules) yet, therefore the
+project and its dependencies have to be made available inside of the `$GOPATH`.
+
+Create a symlink to the `passphrase` project directory at its `$GOPATH` source
+path:
+
+```sh
+mkdir -p "$GOPATH/src/github.com/blueimp"
+ln -s "$PWD" "$GOPATH/src/github.com/blueimp/passphrase"
+```
+
+Install the App Engine dependencies from within `$GOPATH`:
+
+```sh
+(cd "$GOPATH/src/github.com/blueimp/passphrase/appengine" && go get ./...)
 ```
 
 ### Environment variables
