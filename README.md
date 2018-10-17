@@ -26,13 +26,7 @@ passphrase [number]
 ```
 
 ## Import
-First clone the project via `go get`:
-
-```sh
-go get github.com/blueimp/passphrase
-```
-
-The `passphrase` library can then be imported and used with any type
+The `passphrase` library can be imported and used with any type
 implementing the [io.Writer interface](https://golang.org/pkg/io/#Writer), e.g.
 `os.Stdout`:
 
@@ -185,25 +179,6 @@ and can be installed on MacOS via [Homebrew](https://brew.sh/):
 
 ```sh
 brew install entr
-```
-
-### Dependencies
-App Engine does not support
-[Go modules](https://github.com/golang/go/wiki/Modules) yet, therefore the
-project and its dependencies have to be made available inside of the `$GOPATH`.
-
-Create a symlink to the `passphrase` project directory at its `$GOPATH` source
-path:
-
-```sh
-mkdir -p "$GOPATH/src/github.com/blueimp"
-ln -s "$PWD" "$GOPATH/src/github.com/blueimp/passphrase"
-```
-
-Install the App Engine dependencies from within `$GOPATH`:
-
-```sh
-(cd "$GOPATH/src/github.com/blueimp/passphrase/appengine" && go get ./...)
 ```
 
 ### Environment variables

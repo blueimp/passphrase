@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/blueimp/passphrase"
 	"github.com/blueimp/passphrase/internal/parse"
-	"google.golang.org/appengine"
-	"google.golang.org/appengine/log"
 )
 
 const defaultNumber = 4
@@ -28,11 +28,15 @@ func indexHandler(response http.ResponseWriter, request *http.Request) {
 	response.Header().Set("x-content-type-options", "nosniff")
 	_, err := passphrase.Write(response, number)
 	if err != nil {
-		log.Errorf(appengine.NewContext(request), fmt.Sprint(err))
+		log.Println(err)
 	}
 }
 
 func main() {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	http.HandleFunc("/", indexHandler)
-	appengine.Main()
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }

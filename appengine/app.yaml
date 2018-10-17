@@ -1,5 +1,4 @@
-runtime: go
-api_version: go1
+runtime: go111
 
 handlers:
 # Root page:
@@ -17,7 +16,3 @@ handlers:
   http_headers:
     strict-transport-security: max-age=31536000;includeSubDomains;preload
     x-content-type-options: nosniff
-
-# Files to ignore when uploading the application to Google Cloud Storage:
-skip_files:
-- ^(.*/)?\..*$
