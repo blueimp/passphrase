@@ -1,4 +1,4 @@
-FROM golang:1.11-rc-alpine as build
+FROM golang:alpine as build
 WORKDIR /opt/passphrase
 COPY . .
 # ldflags explanation (see `go tool link`):
