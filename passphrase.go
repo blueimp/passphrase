@@ -7,28 +7,57 @@ import (
 	"crypto/rand"
 	"io"
 	"math/big"
+	"sync"
 )
+
+// MaxWorkerCount sets the concurrency limit for random number generation:
+var MaxWorkerCount = 128
+
+var wordsCount = int64(len(Words))
 
 type result struct {
 	Number int64
 	Error  error
 }
 
-func randomNumber(maxLength int64, results chan result) {
-	bigInt, err := rand.Int(rand.Reader, big.NewInt(maxLength))
+func generateRandomNumber(maxSize int64, results chan result) {
+	bigInt, err := rand.Int(rand.Reader, big.NewInt(maxSize))
 	if err != nil {
 		results <- result{0, err}
+		return
 	}
 	results <- result{bigInt.Int64(), nil}
 }
 
+func generateRandomNumbers(maxSize int64, results chan result, count int) {
+	if count <= MaxWorkerCount {
+		for i := 0; i < count; i++ {
+			go generateRandomNumber(maxSize, results)
+		}
+		return
+	}
+	tasks := make(chan int)
+	var wg sync.WaitGroup
+	for worker := 0; worker < MaxWorkerCount; worker++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for range tasks {
+				generateRandomNumber(maxSize, results)
+			}
+		}()
+	}
+	for i := 0; i < count; i++ {
+		tasks <- i
+	}
+	close(tasks)
+	wg.Wait()
+}
+
 // Write writes a passphrase with the given number of words:
 func Write(writer io.Writer, numberOfWords int) (n int, err error) {
-	length := int64(len(Words))
 	results := make(chan result)
-	for i := 0; i < numberOfWords; i++ {
-		go randomNumber(length, results)
-	}
+	go generateRandomNumbers(wordsCount, results, numberOfWords)
 	for i := 0; i < numberOfWords; i++ {
 		result := <-results
 		if result.Error != nil {
