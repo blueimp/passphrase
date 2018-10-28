@@ -16,11 +16,7 @@ func main() {
 	var number int
 	if len(os.Args) > 1 {
 		arg := os.Args[1]
-		number = parse.NaturalNumber(
-			arg,
-			defaultNumber,
-			parse.MaxInt,
-		)
+		number = parse.NaturalNumber(arg, defaultNumber)
 		if number == 0 && arg != "0" {
 			fmt.Fprintln(os.Stderr, "argument is not a natural number:", arg)
 			exit(1)
