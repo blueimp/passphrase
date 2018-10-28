@@ -9,7 +9,6 @@ import (
 )
 
 const defaultNumber = 4
-const maxNumber = 100000
 
 var exit = os.Exit
 
@@ -20,7 +19,7 @@ func main() {
 		number = parse.NaturalNumber(
 			arg,
 			defaultNumber,
-			maxNumber,
+			parse.MaxInt,
 		)
 		if number == 0 && arg != "0" {
 			fmt.Fprintln(os.Stderr, "argument is not a natural number:", arg)
