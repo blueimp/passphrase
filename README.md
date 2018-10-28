@@ -25,6 +25,13 @@ an argument for the number of words to generate:
 passphrase [number]
 ```
 
+The concurrency limit for random number generation (default: `128`) can be
+adjusted with the environment variable `PASSPHRASE_MAX_WORKER_COUNT`:
+
+```sh
+PASSPHRASE_MAX_WORKER_COUNT=1000 passphrase 1000
+```
+
 ## Import
 The `passphrase` library can be imported and used with any type
 implementing the [io.Writer interface](https://golang.org/pkg/io/#Writer), e.g.

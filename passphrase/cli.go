@@ -24,6 +24,12 @@ func main() {
 	} else {
 		number = defaultNumber
 	}
+	passphrase.MaxWorkerCount = parse.NaturalNumber(
+		os.Getenv("PASSPHRASE_MAX_WORKER_COUNT"),
+		passphrase.MaxWorkerCount,
+		parse.MaxInt,
+		1,
+	)
 	_, err := passphrase.Write(os.Stdout, number)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
