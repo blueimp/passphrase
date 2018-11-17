@@ -4,7 +4,7 @@ import (
 	"strconv"
 )
 
-// MaxInt is the naximum integer value on this platform:
+// MaxInt is the naximum integer value on this platform.
 const MaxInt = int(^uint(0) >> 1)
 
 // NaturalNumber interprets the given string parameter as natural number.

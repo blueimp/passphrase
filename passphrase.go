@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-// MaxWorkerCount sets the concurrency limit for random number generation:
+// MaxWorkerCount sets the concurrency limit for random number generation.
 var MaxWorkerCount = 128
 
 var wordsCount = int64(len(Words))
@@ -54,7 +54,7 @@ func generateRandomNumbers(maxSize int64, results chan result, count int) {
 	wg.Wait()
 }
 
-// Write writes a passphrase with the given number of words:
+// Write writes a passphrase with the given number of words.
 func Write(writer io.Writer, numberOfWords int) (n int, err error) {
 	results := make(chan result)
 	go generateRandomNumbers(wordsCount, results, numberOfWords)
@@ -76,7 +76,7 @@ func Write(writer io.Writer, numberOfWords int) (n int, err error) {
 	return n, nil
 }
 
-// String returns a passphrase with the given number of words:
+// String returns a passphrase with the given number of words.
 func String(numberOfWords int) (str string, err error) {
 	var buffer bytes.Buffer
 	_, err = Write(&buffer, numberOfWords)

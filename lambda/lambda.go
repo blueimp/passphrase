@@ -22,7 +22,7 @@ func logRequest(request *events.APIGatewayProxyRequest) {
 	}
 }
 
-// Handler is the Lambda function handler:
+// Handler is the Lambda function handler.
 func Handler(request *events.APIGatewayProxyRequest) (
 	events.APIGatewayProxyResponse,
 	error,
