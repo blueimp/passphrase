@@ -34,11 +34,13 @@ var wordsFileTemplate = template.Must(template.New("").Parse(
 // This file was auto-generated at
 // {{ .Timestamp }}
 // using data from
-// {{ .URL }}
+// {{ .URL }}.
 package passphrase
 
+// MinWordLength defines the minimum length for the individual passphrase words.
 var MinWordLength = {{ .MinWordLength }}
 
+// Words is the list of strings used for the random passphrase generation.
 var Words = [...]string{
 {{- range .Words }}
 	{{ printf "%q" . }},
