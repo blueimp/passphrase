@@ -16,3 +16,6 @@ handlers:
     http_headers:
       strict-transport-security: max-age=31536000;includeSubDomains;preload
       x-content-type-options: nosniff
+
+automatic_scaling:
+  max_instances: 1
